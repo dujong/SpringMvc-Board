@@ -3,9 +3,9 @@ package springmvc.board.domain;
 import lombok.Data;
 
 @Data
-public class User {
+public class Member {
 //    private Long member_Idx;
-    private String user_id;
+    private String member_id;
     private String password;
 //    private String email;
 //    private String name;
@@ -14,11 +14,11 @@ public class User {
 //    private String sex;
 //    private MemberStatus status;
 
-    public User() {
+    public Member() {
     }
 
-    public User(String user_id, String password) {
-        this.user_id = user_id;
+    public Member(String member_id, String password) {
+        this.member_id = member_id;
         this.password = password;
     }
 }

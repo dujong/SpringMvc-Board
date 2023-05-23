@@ -1,4 +1,4 @@
-package springmvc.board.controller.user;
+package springmvc.board.controller.member;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -6,9 +6,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import springmvc.board.domain.User;
-import springmvc.board.repository.user.UserRepository;
-import springmvc.board.service.user.UserService;
+import springmvc.board.domain.Member;
+import springmvc.board.repository.member.MemberRepository;
+import springmvc.board.service.member.MemberService;
 
 import java.util.NoSuchElementException;
 
@@ -16,9 +16,9 @@ import java.util.NoSuchElementException;
 @RequestMapping("/")
 @Controller
 @RequiredArgsConstructor
-public class UserController {
-    private final UserService userService;
-    private final UserRepository userRepository;
+public class MemberController {
+    private final MemberService memberService;
+    private final MemberRepository memberRepository;
 
     /**
      * home
@@ -38,11 +38,11 @@ public class UserController {
 
     @PostMapping("member/login")
 //    public String login(@ModelAttribute Member member, Model model) {
-    public String login(@RequestParam String user_id,
+    public String login(@RequestParam String member_id,
                         @RequestParam String password,
                         RedirectAttributes redirectAttributes){
         try {
-            User findMember = userRepository.findById(user_id);
+            Member findMember = memberRepository.findById(member_id);
             log.info("find member password={} class={}", findMember.getPassword(), findMember.getPassword().getClass());
             log.info("input password={} class={}", password, password.getClass());
             if(findMember.getPassword().equals(password)){
@@ -64,22 +64,25 @@ public class UserController {
     public String signup() {
         return "member/signupForm";
     }
-    @GetMapping("member/signupRs")
-    public String signupResult() {
-        return "member/signupRs";
-    }
     @PostMapping("member/signup")
-//    public String signup(@ModelAttribute Member member, Model model) {
     public String signup(
-            @RequestParam String user_id,
+            @RequestParam String member_id,
             @RequestParam String password,
-            Model model){
+            Model model,
+            RedirectAttributes redirectAttributes){
 
-        User member = new User(user_id, password);
-        userService.join(member);
+        Member member = new Member(member_id, password);
+        memberService.join(member);
 
         model.addAttribute("member", member);
+        redirectAttributes.addAttribute("member_id", member_id);
 
-        return "redirect:/member/signupRs";
+        return "redirect:/member/signupRs/{member_id}";
     }
+    @GetMapping("member/signupRs/{member_id}")
+    public String signupResult(@PathVariable String member_id, Model model) {
+        model.addAttribute("member_id", member_id);
+        return "member/signupRs";
+    }
+
 }

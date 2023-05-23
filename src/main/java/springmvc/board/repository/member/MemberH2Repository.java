@@ -1,4 +1,4 @@
-package springmvc.board.repository.user;
+package springmvc.board.repository.member;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.stereotype.Repository;
-import springmvc.board.domain.User;
+import springmvc.board.domain.Member;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -17,12 +17,12 @@ import java.util.NoSuchElementException;
 @Slf4j
 @Repository
 @RequiredArgsConstructor
-public class UserH2Repository implements UserRepository {
+public class MemberH2Repository implements MemberRepository {
     private final DataSource dataSource;
 
     @SneakyThrows
     @Override
-    public User save(User user) {
+    public Member save(Member member) {
         String sql = "insert into member_table(member_id, password) values (?, ?)";
 
         Connection con = null;
@@ -31,13 +31,13 @@ public class UserH2Repository implements UserRepository {
         try {
             con = getConnection();
             pstmt = con.prepareStatement(sql);
-            pstmt.setString(1, user.getUser_id());
-            pstmt.setString(2, user.getPassword());
+            pstmt.setString(1, member.getMember_id());
+            pstmt.setString(2, member.getPassword());
             pstmt.executeUpdate();
-            return user;
+            return member;
         }
         catch (SQLException e) {
-            log.info("user create error", e);
+            log.info("member create error", e);
             throw e;
         }
         finally {
@@ -46,7 +46,7 @@ public class UserH2Repository implements UserRepository {
     }
     @SneakyThrows
     @Override
-    public User findById(String userId) {
+    public Member findById(String member_id) {
         String sql = "select * from member_table where member_id = ?";
 
         Connection con = null;
@@ -56,22 +56,22 @@ public class UserH2Repository implements UserRepository {
         try {
             con = getConnection();
             pstmt = con.prepareStatement(sql);
-            pstmt.setString(1, userId);
+            pstmt.setString(1, member_id);
             rs = pstmt.executeQuery();
 
             if (rs.next()) {
-                User user = new User();
-                user.setUser_id(rs.getString("member_id"));
-                user.setPassword(rs.getString("password"));
-                return user;
+                Member member = new Member();
+                member.setMember_id(rs.getString("member_id"));
+                member.setPassword(rs.getString("password"));
+                return member;
             }
             else {
-                throw new NoSuchElementException("member not found userId=" + userId);
+                throw new NoSuchElementException("member not found memberId=" + member_id);
             }
 
         }
         catch (SQLException e) {
-            log.info("user select error", e);
+            log.info("member select error", e);
             throw e;
         }
         finally {
@@ -81,9 +81,9 @@ public class UserH2Repository implements UserRepository {
 
     @SneakyThrows
     @Override
-    public List<User> findAll() {
+    public List<Member> findAll() {
         String sql = "select * from member_table";
-        List<User> user = new ArrayList<>();
+        List<Member> members = new ArrayList<>();
         Connection con = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -93,9 +93,9 @@ public class UserH2Repository implements UserRepository {
             pstmt = con.prepareStatement(sql);
             rs = pstmt.executeQuery();
             while(rs.next()){
-                user.add(new User(rs.getString("member_id"), rs.getString("password")));
+                members.add(new Member(rs.getString("member_id"), rs.getString("password")));
             }
-            return user;
+            return members;
 
         }
         catch (SQLException e) {
@@ -109,7 +109,7 @@ public class UserH2Repository implements UserRepository {
 
     @SneakyThrows
     @Override
-    public void update(String userId, String memberPassword) {
+    public void update(String member_id, String memberPassword) {
         String sql = "update member_table set password=? where member_id = ?";
 
         Connection con = null;
@@ -119,7 +119,7 @@ public class UserH2Repository implements UserRepository {
             con = getConnection();
             pstmt = con.prepareStatement(sql);
             pstmt.setString(1, memberPassword);
-            pstmt.setString(2, userId);
+            pstmt.setString(2, member_id);
             pstmt.executeUpdate();
         }
         catch (SQLException e) {
@@ -133,7 +133,7 @@ public class UserH2Repository implements UserRepository {
     }
     @SneakyThrows
     @Override
-    public void delete(String userId) {
+    public void delete(String member_id) {
         String sql = "delete from member_table where member_id = ?";
         Connection con = null;
         PreparedStatement pstmt = null;
@@ -141,7 +141,7 @@ public class UserH2Repository implements UserRepository {
         try {
             con = getConnection();
             pstmt = con.prepareStatement(sql);
-            pstmt.setString(1, userId);
+            pstmt.setString(1, member_id);
             pstmt.executeUpdate();
         }
         catch (SQLException e) {
