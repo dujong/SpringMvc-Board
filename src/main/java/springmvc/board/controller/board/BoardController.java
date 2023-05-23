@@ -8,9 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import springmvc.board.domain.Board;
 import springmvc.board.repository.board.BoardH2Repository;
-import springmvc.board.repository.user.UserRepository;
+import springmvc.board.repository.board.BoardRepository;
 import springmvc.board.service.board.BoardService;
-import springmvc.board.service.user.UserService;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -23,23 +22,39 @@ import java.util.List;
 public class BoardController {
 
     private final BoardService boardService;
-    private final BoardH2Repository boardH2Repository;
+    private final BoardRepository boardRepository;
 
 
     /**
      * board
      */
     @GetMapping
-    public String boardHome() {
+    public String boardHome(Model model) {
+        try {
+            List<Board> boards = boardRepository.findAll();
+            model.addAttribute("boards", boards);
+        }
+        catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         return "board/home";
     }
 
     @GetMapping("/{board_id}")
     public String boardInto(@PathVariable Long board_id, Model model) throws SQLException {
-        Board findBoard = boardH2Repository.findById(board_id);
+        boardRepository.hitAdd(board_id);
+        Board findBoard = boardRepository.findById(board_id);
+
+
         model.addAttribute("board", findBoard);
         return "board/board_info";
+    }
 
+    @GetMapping("/red/{board_id}")
+    public String boardInfo(@PathVariable Long board_id, Model model) throws SQLException {
+        Board findBoard = boardRepository.findById(board_id);
+        model.addAttribute("board", findBoard);
+        return "board/board_info";
     }
 
     @GetMapping("/add")
@@ -48,21 +63,60 @@ public class BoardController {
     }
 
     @PostMapping("/add")
-    public String addBoard(@RequestParam String boardName,
-                           @RequestParam String boardText,
+    public String addBoard(@RequestParam String board_name,
+                           @RequestParam String board_content,
                            Model model,
                            RedirectAttributes redirectAttributes) throws SQLException {
 
-        Long currentsequence = boardH2Repository.sequence();
-        Board board = new Board(currentsequence, boardName, boardText,new Timestamp(System.currentTimeMillis()), 0);
+        Long currentsequence = boardRepository.sequence();
+        Board board = new Board(currentsequence, board_name, board_content,new Timestamp(System.currentTimeMillis()), 0);
         boardService.write(board, "test");
 
         log.info("add board_id={}", currentsequence);
         redirectAttributes.addAttribute("board_id", currentsequence);
 
-        return "redirect:/board/{board_id}";
+        return "redirect:/board/red/{board_id}";
 
     }
 
+    @GetMapping("/{board_id}/edit")
+    public String editBoard(@PathVariable Long board_id, Model model) {
+        try {
+            Board findBoard = boardRepository.findById(board_id);
+            model.addAttribute("board", findBoard);
+        }
+        catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        finally {
+            return "board/editBoard";
+        }
+    }
+
+    @PostMapping("/{board_id}/edit")
+    public String editBoard(@PathVariable Long board_id, @ModelAttribute Board board, RedirectAttributes redirectAttributes) {
+        try {
+            boardRepository.update(board, board_id);
+            redirectAttributes.addAttribute("status", true);
+        }
+        catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        finally {
+            return "redirect:/board/red/{board_id}";
+        }
+    }
+
+    @GetMapping("/{board_id}/delete")
+    public String deleteBoard(@PathVariable Long board_id, Model model) {
+        try {
+            String drop_boardName = boardRepository.findById(board_id).getBoard_name();
+            boardRepository.delete(board_id);
+            model.addAttribute("board_name", drop_boardName);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return "board/deleteBoard";
+    }
 
 }

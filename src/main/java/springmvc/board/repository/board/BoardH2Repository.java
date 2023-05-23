@@ -1,13 +1,12 @@
 package springmvc.board.repository.board;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
+import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.stereotype.Repository;
 import springmvc.board.domain.Board;
-import springmvc.board.domain.User;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -91,8 +90,52 @@ public class BoardH2Repository implements BoardRepository{
     }
 
     @Override
-    public void update(Board board, String userId) throws SQLException {
-        String sql = "update board_table set board_name=?, board_content=?, time=? where user_id=? AND board_id=?";
+    public List<Board> findAll() throws SQLException {
+        String sql = "select * from board_table";
+
+        List<Board> boards = new ArrayList<>();
+
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            con = getConnection();
+            pstmt = con.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+
+//            private Long board_id;
+//            private String board_name;
+//            private String board_content;
+//
+//            private Timestamp time;
+//            private Integer hit;
+
+            while(rs.next()){
+                boards.add( new Board(
+                        rs.getLong("board_id"),
+                        rs.getString("board_name"),
+                        rs.getString("board_content"),
+                        rs.getTimestamp("time"),
+                        rs.getInt("hit"))
+                );
+            }
+
+        }
+        catch (SQLException e) {
+            log.info("user create error", e);
+            throw e;
+        }
+        finally {
+            close(con, pstmt, rs);
+        }
+
+        return boards;
+    }
+
+    @Override
+    public void update(Board board, Long board_id) throws SQLException {
+        String sql = "update board_table set board_name=?, board_content=?, time=? where board_id=?";
 
         Connection con = null;
         PreparedStatement pstmt = null;
@@ -103,8 +146,7 @@ public class BoardH2Repository implements BoardRepository{
             pstmt.setString(1, board.getBoard_name());
             pstmt.setString(2, board.getBoard_content());
             pstmt.setTimestamp(3, board.getTime());
-            pstmt.setString(4, userId);
-            pstmt.setLong(5, board.getBoard_id());
+            pstmt.setLong(4, board.getBoard_id());
             pstmt.executeUpdate();
         }
         catch (SQLException e) {
@@ -119,16 +161,15 @@ public class BoardH2Repository implements BoardRepository{
 
 
     @Override
-    public void delete(Long board_id, String userId) throws SQLException {
-        String sql = "delete from board_table where user_id=? AND board_id=?";
+    public void delete(Long board_id) throws SQLException {
+        String sql = "delete from board_table where board_id=?";
         Connection con = null;
         PreparedStatement pstmt = null;
 
         try {
             con = getConnection();
             pstmt = con.prepareStatement(sql);
-            pstmt.setString(1, userId);
-            pstmt.setLong(2, board_id);
+            pstmt.setLong(1, board_id);
             pstmt.executeUpdate();
         }
         catch (SQLException e) {
@@ -166,6 +207,28 @@ public class BoardH2Repository implements BoardRepository{
         }
     }
 
+    @Override
+    public void hitAdd(Long board_id) throws SQLException {
+        String sql = "update board_table set hit=hit+1 where board_id=?";
+
+        Connection con = null;
+        PreparedStatement pstmt = null;
+
+        try {
+            con = getConnection();
+            pstmt = con.prepareStatement(sql);
+            pstmt.setLong(1, board_id);
+            pstmt.executeUpdate();
+        }
+        catch (SQLException e) {
+            log.info("update error", e);
+            throw e;
+        }
+        finally {
+            close(con, pstmt, null);
+        }
+
+    }
 
 
     public void clear() throws SQLException {

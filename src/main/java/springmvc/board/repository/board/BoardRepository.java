@@ -9,7 +9,13 @@ public interface BoardRepository {
 
     public Board findById(Long board_id) throws SQLException;
 
-    public void update(Board board, String userId) throws SQLException;
+    public List<Board> findAll() throws SQLException;
 
-    public void delete(Long board_id, String userId) throws SQLException;
+    public void update(Board board, Long board_id) throws SQLException;
+
+    public void delete(Long board_id) throws SQLException;
+
+    public Long sequence() throws SQLException;
+
+    public void hitAdd(Long board_id) throws SQLException;
 }

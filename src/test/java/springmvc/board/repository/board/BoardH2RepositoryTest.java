@@ -98,7 +98,7 @@ class BoardH2RepositoryTest {
         boardRepository.save(board2_1, "JD2");
 
         //when
-        boardRepository.update(board1_1, "JD1");
+        boardRepository.update(board1_1, 1L);
         Board jd1Boards = boardRepository.findById(1L);
 
         //then
@@ -118,7 +118,7 @@ class BoardH2RepositoryTest {
         boardRepository.save(board2_1, "JD2");
 
         //when
-        boardRepository.delete(1L, "JD1");
+        boardRepository.delete(1L);
 
         //then
         assertThatThrownBy(() -> boardRepository.findById(1L))

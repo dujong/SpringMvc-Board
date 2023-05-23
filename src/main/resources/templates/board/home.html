@@ -31,13 +31,12 @@
             </tr>
             </thead>
             <tbody>
-
-<!--            <tr th:each="item:${items}">-->
-<!--                <td><a href="item.html" th:href="@{/basic/items/{itemId}(itemId=${item.id})}" th:text="${item.id}">회원id</a></td>-->
-<!--                <td><a href="item.html" th:href="@{/basic/items/{itemId}(itemId=${item.id})}" th:text="${item.itemName}">상품명</a></td>-->
-<!--                <td th:text="${item.price}">10000</td>-->
-<!--                <td th:text="${item.quantity}">10</td>-->
-<!--            </tr>-->
+            <tr th:each="board:${boards}">
+                <td><a href="board.html" th:href="@{/board/{board_id}(board_id=${board.board_id})}" th:text="${board.board_id}">index</a></td>
+                <td><a href="board.html" th:href="@{/board/{board_id}(board_id=${board.board_id})}" th:text="${board.board_name}">글 제목</a></td>
+                <td>글쓴이(test)</td>
+                <td th:text="${board.hit}">조회수</td>
+            </tr>
 
             </tbody>
         </table>
