@@ -3,8 +3,14 @@ package springmvc.board.domain.member;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import springmvc.board.domain.BaseTimeEntity;
+import springmvc.board.domain.comment.Comment;
+import springmvc.board.domain.post.Post;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import static javax.persistence.CascadeType.ALL;
 
 @Table(name = "MEMBER")
 @Getter
@@ -15,6 +21,7 @@ import javax.persistence.*;
 public class Member extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "member_id")
     private Long id;
 
     @Column(nullable = false, length = 30, unique = true)
@@ -34,6 +41,23 @@ public class Member extends BaseTimeEntity {
     @Column(length = 1000)
     private String refreshToken;
 
+    //==회원탈퇴 -> 작성한 게시물, 댓글 모두 삭제 ==//
+    @OneToMany(mappedBy = "writer", cascade = ALL, orphanRemoval = true)
+    private List<Post> postList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "writer", cascade = ALL, orphanRemoval = true)
+    private List<Comment> commentList = new ArrayList<>();
+
+    //==연관관계 메서드==//
+    public void addPost(Post post) {
+        //post의 writer 설정은 post에서 함
+        postList.add(post);
+    }
+
+    public void addComment(Comment comment) {
+        commentList.add(comment);
+    }
+
     // Member 정보 수정
     public void updatePassword(PasswordEncoder passwordEncoder, String password) {
         this.password = passwordEncoder.encode(password);
@@ -49,16 +73,16 @@ public class Member extends BaseTimeEntity {
         this.nickname = nickname;
     }
 
-    // Password 암호화
-    public void encodePassword(PasswordEncoder passwordEncoder) {
-        this.password = passwordEncoder.encode(password);
-    }
-
     // JWT
     public void updateRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
     }
     public void destroyRefreshToken() {
         this.refreshToken = null;
+    }
+
+    // Password 암호화
+    public void encodePassword(PasswordEncoder passwordEncoder) {
+        this.password = passwordEncoder.encode(password);
     }
 }
