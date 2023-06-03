@@ -12,6 +12,7 @@ import javax.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static javax.persistence.FetchType.*;
 
@@ -77,5 +78,37 @@ public class Comment extends BaseTimeEntity {
         this.parent = parent;
         this.content = content;
         this.isRemoved = false;
+    }
+
+    //== 비즈니스 로직 ==//
+    public List<Comment> findRemovableList() {
+        List<Comment> result = new ArrayList<>();
+        Optional.ofNullable(this.parent).ifPresentOrElse(
+            parentComment -> {
+                //대댓글인 경우 (부모가 존재하는 경우)
+                if(parentComment.isRemoved() && parentComment.isAllChildRemoved()){
+                    result.addAll(parentComment.getChildList());
+                    result.add(parentComment);
+                }
+            },
+
+            () -> {//댓글인 경우
+                if (isAllChildRemoved()) {
+                    result.add(this);
+                    result.addAll(this.getChildList());
+
+                }
+            }
+        );
+        return result;
+    }
+
+    //모든 자식 댓글이 삭제되었는지 Check
+    private boolean isAllChildRemoved() {
+        return getChildList().stream()
+                .map(Comment::isRemoved)
+                .filter(isRemoved -> !isRemoved)
+                .findAny()
+                .orElse(true);
     }
 }
