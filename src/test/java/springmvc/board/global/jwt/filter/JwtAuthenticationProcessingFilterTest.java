@@ -82,7 +82,7 @@ class JwtAuthenticationProcessingFilterTest {
 
     @BeforeEach
     private void init(){
-        memberRepository.save(Member.builder().username(USERNAME).password(delegatingPasswordEncoder.encode(PASSWORD)).name("Member1").nickname("NickName1").role(Role.USER).age(22).build());
+        memberRepository.save(Member.builder().username(USERNAME).password(delegatingPasswordEncoder.encode(PASSWORD)).name("Member1").nickName("NickName1").role(Role.USER).age(22).build());
         clear();
     }
 

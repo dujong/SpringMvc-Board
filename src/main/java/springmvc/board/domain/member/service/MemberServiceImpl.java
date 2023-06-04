@@ -2,6 +2,7 @@ package springmvc.board.domain.member.service;
 
 import com.sun.jdi.request.DuplicateRequestException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.boot.jaxb.internal.MappingBinder;
 import org.springframework.expression.ExpressionException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,6 +14,7 @@ import springmvc.board.domain.member.dto.MemberUpdateDto;
 import springmvc.board.domain.member.repository.MemberRepository;
 import springmvc.board.global.util.security.SecurityUtil;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService{
@@ -23,16 +25,16 @@ public class MemberServiceImpl implements MemberService{
     @Override
     public void signUp(MemberSignUpDto memberSignUpDto) throws Exception {
         Member member = Member.builder()
-                .username(memberSignUpDto.getUsername())
-                .nickname(memberSignUpDto.getNickName())
-                .password(memberSignUpDto.getPassword())
-                .name(memberSignUpDto.getName())
-                .age(memberSignUpDto.getAge()).build();
+                .username(memberSignUpDto.username())
+                .nickName(memberSignUpDto.nickName())
+                .password(memberSignUpDto.password())
+                .name(memberSignUpDto.name())
+                .age(memberSignUpDto.age()).build();
 
         member.addUserAuthority();
         member.encodePassword(passwordEncoder);
 
-        if(memberRepository.findByUsername(memberSignUpDto.getUsername()).isPresent()){
+        if(memberRepository.findByUsername(memberSignUpDto.username()).isPresent()){
             throw new DuplicateRequestException("이미 존재하는 아이디입니다.");
         }
 
@@ -42,24 +44,19 @@ public class MemberServiceImpl implements MemberService{
     @Override
     public void update(MemberUpdateDto memberUpdateDto) throws Exception {
         Member member = findMember();
-        if (memberUpdateDto.getAge() != -1) {
-            member.updateAge(memberUpdateDto.getAge());
-        }
-        if (memberUpdateDto.getName() != null) {
-            member.updateName(memberUpdateDto.getName());
-        }
-        if (memberUpdateDto.getNickName() != null) {
-            member.updateNickName(memberUpdateDto.getNickName());
-        }
+
+        memberUpdateDto.age().ifPresent(member::updateAge);
+        memberUpdateDto.name().ifPresent(member::updateName);
+        memberUpdateDto.nickName().ifPresent(member::updateNickName);
+
     }
 
     @Override
     public void updatePassword(String checkPassword, String toBePassword) throws Exception {
         Member member = findMember();
-
         checkPassword(checkPassword, member);
-
         member.updatePassword(passwordEncoder, toBePassword);
+
     }
 
     @Override
@@ -88,6 +85,7 @@ public class MemberServiceImpl implements MemberService{
     }
     private void checkPassword(String checkPassword, Member member) throws Exception {
         if (!member.matchPassword(passwordEncoder, checkPassword)) {
+            log.info("checkPassword Error 발생");
             throw new Exception("비밀번호가 일치하지 않습니다.");
         }
     }

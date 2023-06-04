@@ -11,10 +11,7 @@ import springmvc.board.repository.member.MemberRepository_old;
 
 import java.util.NoSuchElementException;
 
-@Slf4j
-@RequestMapping("/")
-@Controller
-@RequiredArgsConstructor
+
 public class MemberController {
     //private final MemberService memberService;
 //    private final MemberRepository_old memberRepository;

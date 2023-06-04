@@ -59,7 +59,7 @@ public class LoginTest {
                 .username(USERNAME)
                 .password(delegatingPasswordEncoder.encode(PASSWORD))
                 .name("Member1")
-                .nickname("NickName1")
+                .nickName("NickName1")
                 .role(Role.USER)
                 .age(26)
                 .build());

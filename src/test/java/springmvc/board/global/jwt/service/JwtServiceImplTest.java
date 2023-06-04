@@ -47,7 +47,7 @@ class JwtServiceImplTest {
 
     @BeforeEach
     public void init() {
-        Member member = Member.builder().username(username).password("1234567890").name("Member1").nickname("NickName1").role(Role.USER).age(22).build();
+        Member member = Member.builder().username(username).password("1234567890").name("Member1").nickName("NickName1").role(Role.USER).age(22).build();
         memberRepository.save(member);
         clear();
     }

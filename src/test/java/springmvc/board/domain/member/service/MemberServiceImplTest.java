@@ -20,6 +20,8 @@ import springmvc.board.domain.member.repository.MemberRepository;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -44,7 +46,7 @@ class MemberServiceImplTest {
     }
 
     private MemberSignUpDto makeMemberSignUpDto() {
-        return new MemberSignUpDto("name","nickName","username",PASSWORD,22);
+        return new MemberSignUpDto("username",PASSWORD,"name","nickNAme",22);
     }
 
     private MemberSignUpDto setMember() throws Exception {
@@ -54,8 +56,8 @@ class MemberServiceImplTest {
         SecurityContext emptyContext = SecurityContextHolder.createEmptyContext();
 
         emptyContext.setAuthentication(new UsernamePasswordAuthenticationToken(User.builder()
-                .username(memberSignUpDto.getUsername())
-                .password(memberSignUpDto.getPassword())
+                .username(memberSignUpDto.username())
+                .password(memberSignUpDto.password())
                 .roles(Role.USER.name())
                 .build(),
                 null, null));
@@ -88,12 +90,12 @@ class MemberServiceImplTest {
         clear();
 
         //then  TODO : 여기 MEMBEREXCEPTION으로 고치기
-        Member member = memberRepository.findByUsername(memberSignUpDto.getUsername()).orElseThrow(() -> new Exception("회원이 없습니다"));
+        Member member = memberRepository.findByUsername(memberSignUpDto.username()).orElseThrow(() -> new Exception("회원이 없습니다"));
         assertThat(member.getId()).isNotNull();
-        assertThat(member.getUsername()).isEqualTo(memberSignUpDto.getUsername());
-        assertThat(member.getName()).isEqualTo(memberSignUpDto.getName());
-        assertThat(member.getNickname()).isEqualTo(memberSignUpDto.getNickName());
-        assertThat(member.getAge()).isEqualTo(memberSignUpDto.getAge());
+        assertThat(member.getUsername()).isEqualTo(memberSignUpDto.username());
+        assertThat(member.getName()).isEqualTo(memberSignUpDto.name());
+        assertThat(member.getNickName()).isEqualTo(memberSignUpDto.nickName());
+        assertThat(member.getAge()).isEqualTo(memberSignUpDto.age());
         assertThat(member.getRole()).isSameAs(Role.USER);
 
     }
@@ -161,7 +163,7 @@ class MemberServiceImplTest {
         clear();
 
         //then
-        Member findMember = memberRepository.findByUsername(memberSignUpDto.getUsername()).orElseThrow(() -> new Exception());
+        Member findMember = memberRepository.findByUsername(memberSignUpDto.username()).orElseThrow(() -> new Exception());
         assertThat(findMember.matchPassword(passwordEncoder, toBePassword)).isTrue();
 
     }
@@ -175,15 +177,15 @@ class MemberServiceImplTest {
 
         //when
         String updateName = "변경할래용";
-        memberService.update(new MemberUpdateDto(updateName, null, -1));
+        memberService.update(new MemberUpdateDto(Optional.of(updateName), Optional.empty(), Optional.empty()));
         clear();
 
 
         //then
-        memberRepository.findByUsername(memberSignUpDto.getUsername()).ifPresent((member -> {
+        memberRepository.findByUsername(memberSignUpDto.username()).ifPresent((member -> {
             assertThat(member.getName()).isEqualTo(updateName);
-            assertThat(member.getAge()).isEqualTo(memberSignUpDto.getAge());
-            assertThat(member.getNickname()).isEqualTo(memberSignUpDto.getNickName());
+            assertThat(member.getAge()).isEqualTo(memberSignUpDto.age());
+            assertThat(member.getNickName()).isEqualTo(memberSignUpDto.nickName());
         }));
 
     }
@@ -194,14 +196,14 @@ class MemberServiceImplTest {
 
         //when
         String updateNickName = "변경할래용";
-        memberService.update(new MemberUpdateDto(null, updateNickName, -1));
+        memberService.update(new MemberUpdateDto(Optional.empty(), Optional.of(updateNickName), Optional.empty()));
         clear();
 
         //then
-        memberRepository.findByUsername(memberSignUpDto.getUsername()).ifPresent((member -> {
-            assertThat(member.getNickname()).isEqualTo(updateNickName);
-            assertThat(member.getAge()).isEqualTo(memberSignUpDto.getAge());
-            assertThat(member.getName()).isEqualTo(memberSignUpDto.getName());
+        memberRepository.findByUsername(memberSignUpDto.username()).ifPresent((member -> {
+            assertThat(member.getNickName()).isEqualTo(updateNickName);
+            assertThat(member.getAge()).isEqualTo(memberSignUpDto.age());
+            assertThat(member.getName()).isEqualTo(memberSignUpDto.name());
         }));
 
     }
@@ -213,14 +215,14 @@ class MemberServiceImplTest {
 
         //when
         Integer updateAge = 33;
-        memberService.update(new MemberUpdateDto(null, null, updateAge));
+        memberService.update(new MemberUpdateDto(Optional.empty(), Optional.empty(), Optional.of(updateAge)));
         clear();
 
         //then
-        memberRepository.findByUsername(memberSignUpDto.getUsername()).ifPresent((member -> {
+        memberRepository.findByUsername(memberSignUpDto.username()).ifPresent((member -> {
             assertThat(member.getAge()).isEqualTo(updateAge);
-            assertThat(member.getNickname()).isEqualTo(memberSignUpDto.getNickName());
-            assertThat(member.getName()).isEqualTo(memberSignUpDto.getName());
+            assertThat(member.getNickName()).isEqualTo(memberSignUpDto.nickName());
+            assertThat(member.getName()).isEqualTo(memberSignUpDto.name());
         }));
     }
 
@@ -233,15 +235,15 @@ class MemberServiceImplTest {
         //when
         String updateNickName = "변경할래요옹";
         String updateName = "변경할래용";
-        memberService.update(new MemberUpdateDto(updateName,updateNickName,-1));
+        memberService.update(new MemberUpdateDto(Optional.of(updateName),Optional.of(updateNickName),Optional.empty()));
         clear();
 
         //then
-        memberRepository.findByUsername(memberSignUpDto.getUsername()).ifPresent((member -> {
-            assertThat(member.getNickname()).isEqualTo(updateNickName);
+        memberRepository.findByUsername(memberSignUpDto.username()).ifPresent((member -> {
+            assertThat(member.getNickName()).isEqualTo(updateNickName);
             assertThat(member.getName()).isEqualTo(updateName);
 
-            assertThat(member.getAge()).isEqualTo(memberSignUpDto.getAge());
+            assertThat(member.getAge()).isEqualTo(memberSignUpDto.age());
         }));
 
     }
@@ -254,15 +256,15 @@ class MemberServiceImplTest {
         //when
         Integer updateAge = 33;
         String updateName = "변경할래용";
-        memberService.update(new MemberUpdateDto(updateName,null,updateAge));
+        memberService.update(new MemberUpdateDto(Optional.of(updateName),Optional.empty(),Optional.of(updateAge)));
         clear();
 
         //then
-        memberRepository.findByUsername(memberSignUpDto.getUsername()).ifPresent((member -> {
+        memberRepository.findByUsername(memberSignUpDto.username()).ifPresent((member -> {
             assertThat(member.getAge()).isEqualTo(updateAge);
             assertThat(member.getName()).isEqualTo(updateName);
 
-            assertThat(member.getNickname()).isEqualTo(memberSignUpDto.getNickName());
+            assertThat(member.getNickName()).isEqualTo(memberSignUpDto.nickName());
         }));
 
 
@@ -275,15 +277,15 @@ class MemberServiceImplTest {
         //when
         Integer updateAge = 33;
         String updateNickname = "변경할래용";
-        memberService.update(new MemberUpdateDto(null, updateNickname, updateAge));
+        memberService.update(new MemberUpdateDto(Optional.empty(), Optional.of(updateNickname), Optional.of(updateAge)));
         clear();
 
         //then
-        memberRepository.findByUsername(memberSignUpDto.getUsername()).ifPresent((member -> {
+        memberRepository.findByUsername(memberSignUpDto.username()).ifPresent((member -> {
             assertThat(member.getAge()).isEqualTo(updateAge);
-            assertThat(member.getNickname()).isEqualTo(updateNickname);
+            assertThat(member.getNickName()).isEqualTo(updateNickname);
 
-            assertThat(member.getName()).isEqualTo(memberSignUpDto.getName());
+            assertThat(member.getName()).isEqualTo(memberSignUpDto.name());
         }));
 
     }
@@ -297,13 +299,13 @@ class MemberServiceImplTest {
         Integer updateAge = 33;
         String updateNickname = "변경할래용";
         String updateName = "변경할래용";
-        memberService.update(new MemberUpdateDto(updateName, updateNickname, updateAge));
+        memberService.update(new MemberUpdateDto(Optional.of(updateName), Optional.of(updateNickname), Optional.of(updateAge)));
         clear();
 
         //then
-        memberRepository.findByUsername(memberSignUpDto.getUsername()).ifPresent((member -> {
+        memberRepository.findByUsername(memberSignUpDto.username()).ifPresent((member -> {
             assertThat(member.getAge()).isEqualTo(updateAge);
-            assertThat(member.getNickname()).isEqualTo(updateNickname);
+            assertThat(member.getNickName()).isEqualTo(updateNickname);
             assertThat(member.getName()).isEqualTo(updateName);
         }));
     }
@@ -322,7 +324,7 @@ class MemberServiceImplTest {
         memberService.withdraw(PASSWORD);
 
         //then
-        assertThat(assertThrows(Exception.class, ()-> memberRepository.findByUsername(memberSignUpDto.getUsername()).orElseThrow(() -> new Exception("회원이 없습니다"))).getMessage()).isEqualTo("회원이 없습니다");
+        assertThat(assertThrows(Exception.class, ()-> memberRepository.findByUsername(memberSignUpDto.username()).orElseThrow(() -> new Exception("회원이 없습니다"))).getMessage()).isEqualTo("회원이 없습니다");
 
     }
 
@@ -343,17 +345,17 @@ class MemberServiceImplTest {
     public void 회원정보조회() throws Exception {
         //given
         MemberSignUpDto memberSignUpDto = setMember();
-        Member member = memberRepository.findByUsername(memberSignUpDto.getUsername()).orElseThrow(() -> new Exception());
+        Member member = memberRepository.findByUsername(memberSignUpDto.username()).orElseThrow(() -> new Exception());
         clear();
 
         //when
         MemberInfoDto info = memberService.getInfo(member.getId());
 
         //then
-        assertThat(info.getUsername()).isEqualTo(memberSignUpDto.getUsername());
-        assertThat(info.getName()).isEqualTo(memberSignUpDto.getName());
-        assertThat(info.getAge()).isEqualTo(memberSignUpDto.getAge());
-        assertThat(info.getNickName()).isEqualTo(memberSignUpDto.getNickName());
+        assertThat(info.getUsername()).isEqualTo(memberSignUpDto.username());
+        assertThat(info.getName()).isEqualTo(memberSignUpDto.name());
+        assertThat(info.getAge()).isEqualTo(memberSignUpDto.age());
+        assertThat(info.getNickName()).isEqualTo(memberSignUpDto.nickName());
     }
 
     @Test
@@ -365,10 +367,10 @@ class MemberServiceImplTest {
         MemberInfoDto myInfo = memberService.getMyInfo();
 
         //then
-        assertThat(myInfo.getUsername()).isEqualTo(memberSignUpDto.getUsername());
-        assertThat(myInfo.getName()).isEqualTo(memberSignUpDto.getName());
-        assertThat(myInfo.getAge()).isEqualTo(memberSignUpDto.getAge());
-        assertThat(myInfo.getNickName()).isEqualTo(memberSignUpDto.getNickName());
+        assertThat(myInfo.getUsername()).isEqualTo(memberSignUpDto.username());
+        assertThat(myInfo.getName()).isEqualTo(memberSignUpDto.name());
+        assertThat(myInfo.getAge()).isEqualTo(memberSignUpDto.age());
+        assertThat(myInfo.getNickName()).isEqualTo(memberSignUpDto.nickName());
 
     }
 

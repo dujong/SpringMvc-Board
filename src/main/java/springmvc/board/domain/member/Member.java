@@ -30,7 +30,7 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false, length = 30)
     private String name;
     @Column(nullable = false, length = 30)
-    private String nickname;
+    private String nickName;
 
     @Column(nullable = false, length = 30)
     private Integer age;
@@ -69,8 +69,8 @@ public class Member extends BaseTimeEntity {
     public void updateAge(int age) {
         this.age = age;
     }
-    public void updateNickName(String nickname){
-        this.nickname = nickname;
+    public void updateNickName(String nickName){
+        this.nickName = nickName;
     }
 
     // JWT
