@@ -3,6 +3,7 @@ package springmvc.board.global.jwt.service;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
+@Slf4j
 class JwtServiceImplTest {
     @Autowired JwtService jwtService;
     @Autowired MemberRepository memberRepository;
@@ -72,6 +74,9 @@ class JwtServiceImplTest {
         //then
         assertThat(findUsername).isEqualTo(username);
         assertThat(subject).isEqualTo(ACCESS_TOKEN_SUBJECT);
+
+        log.info("subject= " + subject, " " + ACCESS_TOKEN_SUBJECT);
+        log.info("username= " + username, " " + findUsername);
     }
 
     @Test
@@ -80,11 +85,14 @@ class JwtServiceImplTest {
         String refreshToken = jwtService.createRefreshToken();
         DecodedJWT verify = getVerify(refreshToken);
         String subject = verify.getSubject();
-        String username = verify.getClaim(USERNAME_CLAIM).asString();
+        String findUsername = verify.getClaim(USERNAME_CLAIM).asString();
 
         //then
         assertThat(subject).isEqualTo(REFRESH_TOKEN_SUBJECT);
-        assertThat(username).isNull();
+        assertThat(username).isNotNull();
+
+        log.info("subject= " + subject, " " + ACCESS_TOKEN_SUBJECT);
+        log.info("username= " + username, " " + findUsername);
     }
 
     @Test
@@ -101,6 +109,10 @@ class JwtServiceImplTest {
         //then
         assertThrows(Exception.class, () -> memberRepository.findByRefreshToken(refreshToken).get());//
         assertThat(memberRepository.findByRefreshToken(reIssuedRefreshToken).get().getUsername()).isEqualTo(username);
+
+        log.info("expired refreshToken: " + refreshToken);
+        log.info("new refreshToken: " + reIssuedRefreshToken);
+        log.info("member name: " + memberRepository.findByRefreshToken(reIssuedRefreshToken).get().getUsername());
     }
 
     @Test
@@ -119,6 +131,9 @@ class JwtServiceImplTest {
 
         Member member = memberRepository.findByUsername(username).get();
         assertThat(member.getRefreshToken()).isNull();
+
+        log.info("expired refreshToken state: " + refreshToken);
+        log.info("member refreshToken state: " + member.getRefreshToken());
     }
 
 

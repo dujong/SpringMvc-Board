@@ -78,23 +78,6 @@ public class JwtServiceImpl implements JwtService{
                 );
     }
 
-//    @Override
-//    public void sendToken(HttpServletResponse response, String accessToken, String refreshToken) throws IOException {
-//        response.setContentType("application/json;charset=UTF-8");
-//        response.setStatus(HttpServletResponse.SC_OK);
-//
-//        setAccessTokenHeader(response, accessToken);
-//        setRefreshTokenHeader(response, refreshToken);
-//
-//        Map<String, String> tokenMap = new HashMap<>();
-//        tokenMap.put(ACCESS_TOKEN_SUBJECT, accessToken);
-//        tokenMap.put(REFRESH_TOKEN_SUBJECT, refreshToken);
-//
-//        String token = objectMapper.writeValueAsString(tokenMap);
-//
-//        response.getWriter().write(token);
-//    }
-
     @Override
     public void sendAccessAndRefreshToken(HttpServletResponse response, String accessToken, String refreshToken) {
         response.setStatus(HttpServletResponse.SC_OK);

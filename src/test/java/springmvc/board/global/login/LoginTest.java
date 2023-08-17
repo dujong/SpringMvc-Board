@@ -1,6 +1,7 @@
 package springmvc.board.global.login;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Slf4j
 @SpringBootTest
 @Transactional
 @AutoConfigureMockMvc
@@ -85,12 +87,14 @@ public class LoginTest {
         //given
         Map<String, String> map = getUsernamePasswordMap(USERNAME, PASSWORD);
 
-
         //when, then
         MvcResult result = perform(LOGIN_URL, APPLICATION_JSON, map)
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
+
+        log.info("member info "+ USERNAME + " " +PASSWORD);
+        log.info("login info " + map.get(KEY_USERNAME)+ " " + map.get(KEY_PASSWORD));
     }
 
     @Test
@@ -103,6 +107,9 @@ public class LoginTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
+
+        log.info("member info "+ USERNAME + " " +PASSWORD);
+        log.info("login info " + map.get(KEY_USERNAME)+ " " + map.get(KEY_PASSWORD));
     }
 
     @Test
@@ -116,6 +123,9 @@ public class LoginTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
+
+        log.info("member info "+ USERNAME + " " +PASSWORD);
+        log.info("login info " + map.get(KEY_USERNAME)+ " " + map.get(KEY_PASSWORD));
     }
 
 
@@ -129,8 +139,6 @@ public class LoginTest {
         perform(LOGIN_URL+"123", APPLICATION_JSON, map)
                 .andDo(print())
                 .andExpect(status().isForbidden());
-
-
     }
 
 
@@ -160,8 +168,6 @@ public class LoginTest {
                 .andDo(print())
                 .andExpect(status().isNotFound());
     }
-
-
 
     @Test
     public void 오류_로그인_HTTP_METHOD_PUT이면_NOTFOUND() throws Exception {
