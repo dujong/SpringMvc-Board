@@ -14,9 +14,9 @@ import java.util.List;
 import static javax.persistence.CascadeType.ALL;
 
 @Table(name = "POST")
+@Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Entity
 public class Post extends BaseTimeEntity {
 
     @Id

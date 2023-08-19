@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import springmvc.board.domain.member.Member;
 import springmvc.board.domain.member.dto.MemberSignUpDto;
+import springmvc.board.domain.member.exception.MemberExceptionType;
 import springmvc.board.domain.member.repository.MemberRepository;
 import springmvc.board.domain.member.service.MemberService;
 
@@ -67,6 +68,14 @@ class MemberControllerTest {
                 .andExpect(status().isOk());
     }
 
+    private void signUpFail(String singUpData) throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post(SIGN_UP_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(singUpData))
+                .andExpect(status().isBadRequest());
+    }
+
     @Value("${jwt.access.header}")
     private String accessHeader;
     private static final String BEARER = "Bearer ";
@@ -83,6 +92,41 @@ class MemberControllerTest {
                 .andExpect(status().isOk()).andReturn();
 
         return mvcResult.getResponse().getHeader(accessHeader);
+    }
+
+    @Test
+    public void 회원가입_성공() throws Exception {
+        //given
+        String signUpData = objectMapper.writeValueAsString(new MemberSignUpDto(username, password, name, nickName, age));
+        log.info("signUpData type:{}, info:{}", signUpData.getClass(), signUpData);
+        //when
+        signUp(signUpData);
+
+        //then
+        Member member = memberRepository.findByUsername(username).orElseThrow(() -> new Exception("회원이 없습니다"));
+        assertThat(member.getName()).isEqualTo(name);
+        assertThat(memberRepository.findAll().size()).isEqualTo(1);
+        log.info("member name:{}", member.getName());
+        log.info("repository size:{}", memberRepository.findAll().size());
+    }
+
+    @Test
+    public void 회원가입_실패_필드가_없음() throws Exception {//회원가입_실패_필드가_없음() throws Exception {
+        //given
+        String noUsernameSignUpData = objectMapper.writeValueAsString(new MemberSignUpDto(null, password, name, nickName, age));
+        String noPasswordSignUpData = objectMapper.writeValueAsString(new MemberSignUpDto(username, null, name, nickName, age));
+        String noNameSignUpData = objectMapper.writeValueAsString(new MemberSignUpDto(username, password, null, nickName, age));
+        String noNickNameSignUpData = objectMapper.writeValueAsString(new MemberSignUpDto(username, password, name, null, age));
+        String noAgeSignUpData = objectMapper.writeValueAsString(new MemberSignUpDto(username, password, name, nickName, null));
+
+        //when, then
+        signUpFail(noUsernameSignUpData);//예외가 발생하더라도 상태코드는 200
+        signUpFail(noPasswordSignUpData);//예외가 발생하더라도 상태코드는 200
+        signUpFail(noNameSignUpData);//예외가 발생하더라도 상태코드는 200
+        signUpFail(noNickNameSignUpData);//예외가 발생하더라도 상태코드는 200
+        signUpFail(noAgeSignUpData);//예외가 발생하더라도 상태코드는 200
+
+        assertThat(memberRepository.findAll().size()).isEqualTo(0);
     }
 
     @Test
@@ -203,7 +247,7 @@ class MemberControllerTest {
                                 .header(accessHeader,BEARER+accessToken)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(updatePassword))
-                .andExpect(status().isOk());
+                .andExpect(status().isBadRequest());
 
         //then
         Member member = memberRepository.findByUsername(username).orElseThrow(() -> new Exception("회원이 없습니다"));
@@ -235,7 +279,7 @@ class MemberControllerTest {
                                 .header(accessHeader,BEARER+accessToken)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(updatePassword))
-                .andExpect(status().isOk());
+                .andExpect(status().isBadRequest());
 
         //then
         Member member = memberRepository.findByUsername(username).orElseThrow(() -> new Exception("회원이 없습니다"));
@@ -293,7 +337,7 @@ class MemberControllerTest {
                                 .header(accessHeader,BEARER+accessToken)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(updatePassword))
-                .andExpect(status().isOk());
+                .andExpect(status().isBadRequest());
 
         //then
         Member member = memberRepository.findByUsername(username).orElseThrow(() -> new Exception("회원이 없습니다"));
@@ -427,14 +471,15 @@ class MemberControllerTest {
 
 
         //when
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.
-                        get("/member/2211")
-                                .characterEncoding(StandardCharsets.UTF_8)
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                        .get("/member/2211")
+                            .characterEncoding(StandardCharsets.UTF_8)
                                 .header(accessHeader, BEARER + accessToken))
-                .andExpect(status().isOk()).andReturn();
+                .andExpect(status().isNotFound()).andReturn();
 
         //then
-        assertThat(result.getResponse().getContentAsString()).isEqualTo("");//빈 문자열
+        Map<String, Integer> map = objectMapper.readValue(result.getResponse().getContentAsString(), Map.class);
+        assertThat(map.get("errorCode")).isEqualTo(MemberExceptionType.NOT_FOUND_MEMBER.getErrorCode());//빈 문자열
     }
 
 

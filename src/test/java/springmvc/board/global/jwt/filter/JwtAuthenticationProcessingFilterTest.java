@@ -3,6 +3,7 @@ package springmvc.board.global.jwt.filter;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,6 +33,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.RequestEntity.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Slf4j
 @SpringBootTest
 @Transactional
 @AutoConfigureMockMvc
@@ -338,5 +340,6 @@ class JwtAuthenticationProcessingFilterTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
+        log.info("Response message:{}",result.getResponse().getContentAsString());
     }
 }

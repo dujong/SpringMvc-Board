@@ -15,9 +15,9 @@ import static javax.persistence.CascadeType.ALL;
 @Table(name = "MEMBER")
 @Getter
 @Entity
-@AllArgsConstructor
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Member extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -96,3 +96,7 @@ public class Member extends BaseTimeEntity {
         this.role = Role.USER;
     }
 }
+
+
+
+
