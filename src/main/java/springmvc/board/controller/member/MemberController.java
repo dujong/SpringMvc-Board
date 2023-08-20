@@ -1,85 +1,77 @@
-package springmvc.board.controller.member;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import springmvc.board.domain.member.Member;
-import springmvc.board.repository.member.MemberRepository_old;
-
-import java.util.NoSuchElementException;
-
-
-public class MemberController {
-    //private final MemberService memberService;
-//    private final MemberRepository_old memberRepository;
-
-    /**
-     * home
-     */
-//    @GetMapping
-//    public String home() {
-//        return "home/index";
-//    }
-
-    /**
-     * Login
-     */
-//    @GetMapping("member/login")
-//    public String login() {
-//        return "member/loginForm";
+//package springmvc.board.controller.member;
+//
+//import lombok.RequiredArgsConstructor;
+//import lombok.extern.slf4j.Slf4j;
+//import org.springframework.http.HttpStatus;
+//import org.springframework.http.ResponseEntity;
+//import org.springframework.stereotype.Controller;
+//import org.springframework.web.bind.annotation.*;
+//import springmvc.board.domain.member.dto.*;
+//import springmvc.board.domain.member.repository.MemberRepository;
+//import springmvc.board.domain.member.service.MemberService;
+//
+//import javax.servlet.http.HttpServletResponse;
+//import javax.validation.Valid;
+//
+//@Slf4j
+//@RestController
+//@RequiredArgsConstructor
+//public class MemberController {
+//    private final MemberService memberService;
+//    private final MemberRepository memberRepository;
+//
+//    /**
+//     * 회원가입
+//     */
+//    @PostMapping("/signUp")
+//    @ResponseStatus(HttpStatus.OK)
+//    public void signUp(@Valid @RequestBody MemberSignUpDto memberSignUpDto) throws Exception {
+//        memberService.signUp(memberSignUpDto);
 //    }
 //
-//    @PostMapping("member/login")
-////    public String login(@ModelAttribute Member member, Model model) {
-//    public String login(@RequestParam String member_id,
-//                        @RequestParam String password,
-//                        RedirectAttributes redirectAttributes){
-//        try {
-//            Member findMember = memberRepository.findById(member_id);
-//            log.info("find member password={} class={}", findMember.getPassword(), findMember.getPassword().getClass());
-//            log.info("input password={} class={}", password, password.getClass());
-//            if(findMember.getPassword().equals(password)){
-//                return "redirect:/board";
-//            }
-//            else{
-//                redirectAttributes.addAttribute("status", true);
-//                return "redirect:/";
-//            }
-//        }
-//        catch (NoSuchElementException e) {
-//            log.info("아이디를 찾을 수 없습니다.", e);
-//            return "redirect:/member/login";
-//        }
-//
+//    /**
+//     * 회원정보 수정
+//     */
+//    @PutMapping("/member")
+//    @ResponseStatus(HttpStatus.OK)
+//    public void updateBasicInfo(@Valid @RequestBody MemberUpdateDto memberUpdateDto) throws Exception {
+//        memberService.update(memberUpdateDto);
 //    }
 //
-//    @GetMapping("member/signup")
-//    public String signup() {
-//        return "member/signupForm";
+//    /**
+//     * 비밀번호 수정
+//     */
+//    @PutMapping("/member/password")
+//    @ResponseStatus(HttpStatus.OK)
+//    public void updatePassword(@Valid @RequestBody UpdatePasswordDto updatePasswordDto) throws Exception {
+//        memberService.updatePassword(updatePasswordDto.checkPassword(), updatePasswordDto.toBePassword());
 //    }
-//    @PostMapping("member/signup")
-//    public String signup(
-//            @RequestParam String member_id,
-//            @RequestParam String password,
-//            Model model,
-//            RedirectAttributes redirectAttributes){
 //
-//        Member member = new Member(member_id, password);
-//        memberService.join(member);
-//
-//        model.addAttribute("member", member);
-//        redirectAttributes.addAttribute("member_id", member_id);
-//
-//        return "redirect:/member/signupRs/{member_id}";
+//    /**
+//     * 회원탈퇴
+//     */
+//    @DeleteMapping("/member")
+//    @ResponseStatus(HttpStatus.OK)
+//    public void withdraw(@Valid @RequestBody MemberWithDrawDto memberWithDrawDto) throws Exception {
+//        memberService.withdraw(memberWithDrawDto.checkPassword());
 //    }
-
-//    @GetMapping("member/signupRs/{member_id}")
-//    public String signupResult(@PathVariable String member_id, Model model) {
-//        model.addAttribute("member_id", member_id);
-//        return "member/signupRs";
+//
+//    /**
+//     * 회원정보 조회
+//     */
+//    @GetMapping("/member/{id}")
+//    public ResponseEntity getInfo(@Valid @PathVariable("id") Long id) throws Exception {
+//        MemberInfoDto info = memberService.getInfo(id);
+//        return new ResponseEntity(info, HttpStatus.OK);
 //    }
-
-}
+//
+//    /**
+//     * 내 정보조회
+//     */
+//    @GetMapping("/member")
+//    public ResponseEntity getMyInfo(HttpServletResponse response) throws Exception {
+//        MemberInfoDto myInfo = memberService.getMyInfo();
+//        return new ResponseEntity(myInfo, HttpStatus.OK);
+//    }
+//
+//}

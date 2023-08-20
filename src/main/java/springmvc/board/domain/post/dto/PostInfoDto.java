@@ -1,2 +1,4 @@
-package springmvc.board.domain.post.dto;public class PostInfoDto {
+package springmvc.board.domain.post.dto;
+
+public class PostInfoDto {
 }

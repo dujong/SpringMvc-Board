@@ -1,6 +1,7 @@
 package springmvc.board.domain.post;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import springmvc.board.domain.BaseTimeEntity;
@@ -35,8 +36,14 @@ public class Post extends BaseTimeEntity {
     @Column(nullable = false)
     private String content;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String filePath;
+
+    @Builder
+    public Post(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
 
 
     //==게시글을 삭제하면 달려있는 댓글 모두 삭제==//

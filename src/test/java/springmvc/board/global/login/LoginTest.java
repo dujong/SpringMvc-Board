@@ -1,6 +1,7 @@
 package springmvc.board.global.login;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +22,6 @@ import springmvc.board.domain.member.repository.MemberRepository;
 import springmvc.board.domain.member.service.LoginService;
 
 import javax.persistence.EntityManager;
-import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
