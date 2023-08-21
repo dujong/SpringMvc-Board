@@ -54,6 +54,10 @@ public class Comment extends BaseTimeEntity {
         writer.addComment(this);
     }
 
+    public void confirmPost(Post post) {
+        this.post = post;
+        post.addComment(this);
+    }
     public void confirmParent(Comment parent) {
         this.parent = parent;
         parent.addChild(this);
