@@ -17,8 +17,9 @@ import springmvc.board.domain.post.exception.PostExceptionType;
 import springmvc.board.domain.post.repository.PostRepository;
 import springmvc.board.global.file.service.FileService;
 import springmvc.board.global.util.security.SecurityUtil;
+import org.springframework.data.domain.Pageable;
 
-import java.awt.print.Pageable;
+import static springmvc.board.domain.post.exception.PostExceptionType.*;
 
 @Service
 @RequiredArgsConstructor
@@ -46,9 +47,9 @@ public class PostServiceImpl implements PostService{
 
     @Override
     public void update(Long id, PostUpdateDto postUpdateDto) {
-        Post post = postRepository.findById(id).orElseThrow(() -> new PostException(PostExceptionType.POST_NOT_FOUND));
+        Post post = postRepository.findById(id).orElseThrow(() -> new PostException(POST_NOT_FOUND));
 
-        checkAuthority(post, PostExceptionType.NOT_AUTHORITY_UPDATE_POST);
+        checkAuthority(post, NOT_AUTHORITY_UPDATE_POST);
 
         postUpdateDto.title().ifPresent(post::updateTitle);
         postUpdateDto.content().ifPresent(post::updateContents);
@@ -63,23 +64,37 @@ public class PostServiceImpl implements PostService{
 
     @Override
     public void delete(Long id) {
-        Post post = postRepository.findById(id).orElseThrow(() -> new PostException(PostExceptionType.POST_NOT_FOUND));
+        Post post = postRepository.findById(id).orElseThrow(() -> new PostException(POST_NOT_FOUND));
 
-        checkAuthority(post, PostExceptionType.NOT_AUTHORITY_DELETE_POST);
+        checkAuthority(post, NOT_AUTHORITY_DELETE_POST);
 
         extractedFile(post);
 
         postRepository.delete(post);
     }
 
+    /**
+     * Post의 id로 Post 조회
+     */
     @Override
     public PostInfoDto getPostInfo(Long id) {
-        return null;
+        /**
+         * Post + MEMBER 조회 -> 쿼리 1번 발생
+         *
+         * 댓글&대댓글 리스트 조회 -> 쿼리 1번 발생(POST ID로 찾는 것이므로, IN쿼리가 아닌 일반 where문 발생)
+         * (댓글과 대댓글 모두 Comment 클래스이므로, JPA는 구분할 방법이 없어서, 당연히 CommentList에 모두 나오는것이 맞다,
+         * 가지고 온 것을 가지고 우리가 구분지어주어야 한다.)
+         *
+         * 댓글 작성자 정보 조회 -> 배치사이즈를 이용했기때문에 쿼리 1번 혹은 N/배치사이즈 만큼 발생
+         *
+         *
+         */
+        return new PostInfoDto(postRepository.findWithWriterById(id).orElseThrow(() -> new PostException(POST_NOT_FOUND)));
     }
 
     @Override
     public PostPagingDto getPostList(Pageable pageable, PostSearchCondition postSearchCondition) {
-        return null;
+        return new PostPagingDto(postRepository.search(postSearchCondition, pageable));
     }
 
     private void checkAuthority(Post post, PostExceptionType postExceptionType) {

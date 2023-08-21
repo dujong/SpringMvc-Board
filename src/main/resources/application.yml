@@ -4,31 +4,40 @@ spring:
     url: jdbc:h2:tcp://localhost/~/test
     username: sa
     password:
+  data:
+    web:
+      pageable:
+        default-page-size: 20 #페이징 할 때 기본값, 20개씩 조회
 
+  servlet:
+    multipart:
+      max-request-size: 5MB #업로드 파일 크기 총량 제한
+      max-file-size: 2MB #업로드 파일 크기 제한
 
   jpa:
+    show-sql: true #SQL 로그
     properties:
       hibernate:
         format_sql: true
         user_sql_comments: true
+        default_batch_fetch_size: 500 #배치 사이즈(Collection 조회 최적화
 
     hibernate:
-      ddl-auto: create
+      ddl-auto: none #이제 배포환경에서는 create 사용 X
 
+    open-in-view: false #OSIV 사용 X
 
   profiles:
     include: jwt
+
+logging:
+  level:
+    org:
+      apache:
+        coyote:
+          http11: OFF #HTTP로그 X
+      hibernate:
+        SQL: debug
+
 file:
   dir: C:\files\
-#logging:
-#  level:
-#    org:
-#      apache:
-#        coyote:
-#          http11: debug
-#
-#      hibernate:
-#        SQL: debug
-#
-#    springmvc:
-#      board:info

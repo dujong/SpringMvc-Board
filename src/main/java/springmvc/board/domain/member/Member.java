@@ -42,9 +42,10 @@ public class Member extends BaseTimeEntity {
     private String refreshToken;
 
     //==회원탈퇴 -> 작성한 게시물, 댓글 모두 삭제 ==//
+    @Builder.Default //Builder를 통해서 Member 객체 생성 시 postList가 null 값으로 초기화 되버리는 문제 발생
     @OneToMany(mappedBy = "writer", cascade = ALL, orphanRemoval = true)
     private List<Post> postList = new ArrayList<>();
-
+    @Builder.Default
     @OneToMany(mappedBy = "writer", cascade = ALL, orphanRemoval = true)
     private List<Comment> commentList = new ArrayList<>();
 
