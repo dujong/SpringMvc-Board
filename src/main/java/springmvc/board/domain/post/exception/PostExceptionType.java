@@ -1,5 +1,7 @@
 package springmvc.board.domain.post.exception;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import springmvc.board.global.exception.BaseExceptionType;
 
@@ -21,14 +23,14 @@ public enum PostExceptionType implements BaseExceptionType {
 
     @Override
     public int getErrorCode() {
-        return 0;
+        return errorCode;
     }
     @Override
     public HttpStatus getHttpStatus() {
-        return null;
+        return httpStatus;
     }
     @Override
     public String getErrorMessage() {
-        return null;
+        return errorMessage;
     }
 }
