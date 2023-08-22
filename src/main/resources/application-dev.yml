@@ -1,0 +1,57 @@
+spring:
+  config:
+    activate:
+      on-profile: dev
+  banner:
+    location: dev-banner.txt
+
+  profiles:
+    include: jwt
+
+  datasource:
+    driver-class-name: org.h2.Driver
+    username: sa
+
+  data:
+    web:
+      pageable:
+        default-page-size: 20
+
+
+  servlet:
+    multipart:
+      max-request-size: 5MB
+      max-file-size: 2MB
+
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        user_sql_cooments: true
+        default_batch_fetch_size: 100
+
+    hibernate:
+      ddl-auto: create
+
+    open-in-view: false
+
+  h2:
+    console:
+      enabled: true ##임베디드 방식의 H2디비 사용
+
+logging:
+  level:
+    org:
+      apache:
+        coyote:
+          http11: OFF #debug
+
+      hiberante:
+        SQL: debug
+
+    boardexample:
+      myboard: info
+
+file:
+  dir: C:\files\
