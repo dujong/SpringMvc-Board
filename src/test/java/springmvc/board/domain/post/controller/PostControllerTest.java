@@ -44,7 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @Transactional
 @AutoConfigureMockMvc
-class PostControllerTest {
+class PostControllerTest { //TODO 수정, 삭제, 조회 Test Error 수정
     @Autowired
     MockMvc mockmvc;
     @Autowired

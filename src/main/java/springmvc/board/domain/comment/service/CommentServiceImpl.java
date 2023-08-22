@@ -29,11 +29,10 @@ public class CommentServiceImpl implements CommentService{
     private final PostRepository postRepository;
 
     @Override
-    public void save(Long postId, CommentSaveDto commentSaveDto) {
+    public void save(Long postId, CommentSaveDto commentSaveDto){
         Comment comment = commentSaveDto.toEntity();
 
         comment.confirmWriter(memberRepository.findByUsername(SecurityUtil.getLoginUsername()).orElseThrow(() -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER)));
-
         comment.confirmPost(postRepository.findById(postId).orElseThrow(() -> new PostException(PostExceptionType.POST_NOT_FOUND)));
 
         commentRepository.save(comment);
