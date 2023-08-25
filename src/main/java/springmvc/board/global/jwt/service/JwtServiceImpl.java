@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import springmvc.board.domain.member.repository.MemberRepository;
@@ -19,14 +20,15 @@ import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
-@Transactional
 @Service
+@Transactional
 @RequiredArgsConstructor
 @Setter(value = AccessLevel.PRIVATE)
+@PropertySource(value = {"application-jwt.yml"})
 public class JwtServiceImpl implements JwtService{
 
     @Value("${jwt.secret}")
-    private String secret;
+    private String secret = "";
     @Value("${jwt.access.expiration}")
     private long accessTokenValidityInSeconds;
     @Value("${jwt.refresh.expiration}")
