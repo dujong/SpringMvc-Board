@@ -8,9 +8,11 @@
 
 <h3 sec:authorize="isAuthenticated()">반갑습니다. <span sec:authentication="name"></span></h3>
 <hr>
-<h2 th:if="${param.status}" th:text="'로그인실패'"></h2>
-<a sec:authorize="isAnonymous()" th:href="@{/member/login}">로그인</a>
-<a sec:authorize="isAuthenticated()" th:href="@{/member/logout}">로그아웃</a>
-<a sec:authorize="isAnonymous()" th:href="@{/member/signup}">회원가입</a>
+<form method="post">
+    <h2 th:if="${param.status}" th:text="'로그인실패'"></h2>
+    <a sec:authorize="isAnonymous()" th:href="@{/login}">로그인</a>
+    <a sec:authorize="isAnonymous()" th:href="@{/signUp}">회원가입</a>
+</form>
+
 </body>
 </html>

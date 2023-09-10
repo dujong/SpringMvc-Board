@@ -12,6 +12,9 @@ import springmvc.board.domain.comment.service.CommentService;
 public class CommentController {
     private final CommentService commentService;
 
+    /**
+     * 댓글 등록
+     */
     @PostMapping("/comment/{postId}")
     @ResponseStatus(HttpStatus.CREATED)
     public void commentSave(@PathVariable("postId") Long postId,
@@ -19,6 +22,9 @@ public class CommentController {
         commentService.save(postId, commentSaveDto);
     }
 
+    /**
+     * 대댓글 등록
+     */
     @PostMapping("/comment/{postId}/{commentId}")
     @ResponseStatus(HttpStatus.CREATED)
     public void reCommentSave(@PathVariable("postId") Long postId,
@@ -27,6 +33,9 @@ public class CommentController {
         commentService.saveReComment(postId, commentId, commentSaveDto);
     }
 
+    /**
+     * 댓글 수정
+     */
     @PutMapping("/comment/{commentId}")
     @ResponseStatus(HttpStatus.OK)
     public void update(@PathVariable("commentId") Long commentId,
@@ -34,6 +43,9 @@ public class CommentController {
         commentService.update(commentId, commentUpdateDto);
     }
 
+    /**
+     * 댓글 삭제
+     */
     @DeleteMapping("/comment/{commentId}")
     @ResponseStatus(HttpStatus.OK)
     public void delete(@PathVariable Long commentId) {

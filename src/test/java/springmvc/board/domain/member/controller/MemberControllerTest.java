@@ -158,7 +158,6 @@ class MemberControllerTest {
         assertThat(member.getNickName()).isEqualTo(nickName+"변경");
         assertThat(member.getAge()).isEqualTo(age+1);
         assertThat(memberRepository.findAll().size()).isEqualTo(1);
-
     }
 
 
