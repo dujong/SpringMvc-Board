@@ -6,8 +6,10 @@ spring:
     location: dev-banner.txt
 
   datasource:
-    driver-class-name: org.h2.Driver
-    username: sa
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://board.cwmttnqkszdz.us-east-1.rds.amazonaws.com:3306/board?characterEncoding=UTF-8&serverTimezone=UTC
+    username: admin
+    password: qwer1234
 
   data:
     web:
@@ -33,9 +35,9 @@ spring:
 
     open-in-view: false
 
-  h2:
-    console:
-      enabled: true ##임베디드 방식의 H2디비 사용
+#  h2:
+#    console:
+#      enabled: true ##임베디드 방식의 H2디비 사용
 
 logging:
   level:

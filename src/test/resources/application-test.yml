@@ -1,16 +1,7 @@
 spring:
-  config:
-    activate:
-      on-profile: prod
-  banner:
-    location: prod-banner.txt
-
-#  datasource:
-#    driver-class-name: org.h2.Driver
-#    username: sa
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://board.cwmttnqkszdz.us-east-1.rds.amazonaws.com:3306/board?characterEncoding=UTF-8&serverTimezone=UTC
+    url: jdbc:mysql://board.cwmttnqkszdz.us-east-1.rds.amazonaws.com/board?characterEncoding=UTF-8&serverTimezone=UTC
     username: admin
     password: qwer1234
 
@@ -36,10 +27,6 @@ spring:
       ddl-auto: create
 
     open-in-view: false
-#
-#  h2:
-#    console:
-#      enabled: true ##임베디드 방식의 H2디비 사용
 
 logging:
   level:
@@ -56,3 +43,14 @@ logging:
 
 file:
   dir: C:\files\
+
+jwt:
+  secret: c2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQtc2lsdmVybmluZS10ZWNoLXNwcmluZy1ib290LWp3dC10dXRvcmlhbC1zZWNyZXQK
+
+  access:
+    expiration: 80
+    header: Authorization
+
+  refresh:
+    expiration: 90
+    header: Authorization-refresh

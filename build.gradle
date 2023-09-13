@@ -41,8 +41,13 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
 	//h2
-	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
-	runtimeOnly 'com.h2database:h2'
+//	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+//	runtimeOnly 'com.h2database:h2'
+
+//	//mysql
+	runtimeOnly 'com.mysql:mysql-connector-j'
+	implementation 'mysql:mysql-connector-java:8.0.33'
+	testImplementation 'mysql:mysql-connector-java:8.0.33'
 
 	//QueryDSL 추가
 	implementation 'com.querydsl:querydsl-jpa:5.0.0'

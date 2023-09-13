@@ -1,25 +1,20 @@
 package springmvc.board.domain.member.repository;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 import springmvc.board.domain.member.Member;
 import springmvc.board.domain.member.Role;
-
 import javax.persistence.EntityManager;
-
-import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @Transactional
 class MemberRepositoryTest {
 
@@ -33,13 +28,13 @@ class MemberRepositoryTest {
         em.clear();
     }
 
-    private void clear(){
+    private void clear() {
         em.flush();
         em.clear();
     }
 
     @Test
-    public void 회원저장_성공()throws Exception {
+    public void 회원저장_성공() throws Exception {
         //given
         Member member = Member.builder().username("username").password("123456").name("Member1").nickName("testA").role(Role.USER).age(26).build();
         //when
@@ -119,7 +114,7 @@ class MemberRepositoryTest {
         findMember.updateAge(updateAge);
         findMember.updateName(updateName);
         findMember.updateNickName(updateNickName);
-        findMember.updatePassword(passwordEncoder,updatePassword);
+        findMember.updatePassword(passwordEncoder, updatePassword);
         em.flush();
 
         //then
@@ -155,7 +150,7 @@ class MemberRepositoryTest {
 
         //when, then
         assertThat(memberRepository.existsByUsername(username)).isTrue();
-        assertThat(memberRepository.existsByUsername(username+"123")).isFalse();
+        assertThat(memberRepository.existsByUsername(username + "123")).isFalse();
     }
 
     @Test
