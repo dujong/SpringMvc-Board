@@ -8,11 +8,15 @@
 
 ## ⚒️Skill Stack
 - Front-end
-    - 아직 미정[HTML ,CSS, Thymeleaf]
+    - [HTML ,CSS, Thymeleaf] (구현예정)
 - Back-end
-    - JAVA, Spring, Security, Spring Data JPA, QueryDSL, AOP, WEBMVC
+    - [JAVA16], [Spring 2.7.11], [Security 5.7.8], [Spring Data JPA], [QueryDSL 5.0.0], [AOP], [WEBMVC]
 - DB
-    - h2 DB
+    - MYSQL8
+- Tool
+    - IntelliJ
+    - Github
+    - aws
 ## 프로젝트 구현 기능
 - 회원(Member)
     - 로그인
