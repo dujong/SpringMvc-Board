@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import springmvc.board.domain.post.cond.PostSearchCondition;
 import springmvc.board.domain.post.dto.PostSaveDto;
@@ -12,7 +13,7 @@ import springmvc.board.domain.post.service.PostService;
 
 import javax.validation.Valid;
 
-@RestController
+@Controller
 @RequiredArgsConstructor
 public class PostController {
     private final PostService postService;

@@ -2,12 +2,13 @@ package springmvc.board.domain.comment.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import springmvc.board.domain.comment.dto.CommentSaveDto;
 import springmvc.board.domain.comment.dto.CommentUpdateDto;
 import springmvc.board.domain.comment.service.CommentService;
 
-@RestController
+@Controller
 @RequiredArgsConstructor
 public class CommentController {
     private final CommentService commentService;

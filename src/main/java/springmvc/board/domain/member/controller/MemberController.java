@@ -1,20 +1,13 @@
 package springmvc.board.domain.member.controller;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import springmvc.board.domain.member.dto.*;
 import springmvc.board.domain.member.service.MemberService;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import springmvc.board.global.jwt.filter.JwtAuthenticationProcessingFilter;
-import springmvc.board.global.jwt.service.JwtService;
-
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
@@ -23,41 +16,21 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
-    private final JwtService jwtService;
-
-    /**
-     * Home
-     */
-    @GetMapping("/")
-    public String home() {
-        return "/member/login";
-    }
-
-    /**
-     * 로그인
-     */
-    @PostMapping("/login")
-    public ResponseEntity login(@Valid @RequestBody MemberLoginDto memberLoginDto) {
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(memberLoginDto.getUsername(), memberLoginDto.getPassword());
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        // 해당 객체를 SecurityContextHolder에 저장하고
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        // authentication 객체를 createToken 메소드를 통해서 JWT Token을 생성
-        String jwt = jwtService.createAccessToken(authentication.getName());
-
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("Authorization", "Bearer " + jwt);
-        return new ResponseEntity(jwt, httpHeaders, HttpStatus.OK);
-    }
 
     /**
      * 회원가입
      */
+    @GetMapping("/signUp")
+    @ResponseStatus(HttpStatus.OK)
+    public String signUp(MemberSignUpDto memberSignUpDto, Model model) throws Exception {
+        model.addAttribute("MemberSignUpDto", memberSignUpDto);
+        return "/login/signupForm";
+    }
     @PostMapping("/signUp")
     @ResponseStatus(HttpStatus.OK)
-    public void signUp(@Valid @RequestBody MemberSignUpDto memberSignUpDto) throws Exception {
+    public String signUp(@RequestPart(value = "key") @Valid MemberSignUpDto memberSignUpDto) throws Exception {
         memberService.signUp(memberSignUpDto);
+        return "/member/login";
     }
 
     /**
