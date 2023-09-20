@@ -2,16 +2,23 @@ package springmvc.board.domain.member.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import springmvc.board.domain.member.Member;
 import springmvc.board.domain.member.dto.MemberInfoDto;
+import springmvc.board.domain.member.dto.MemberLoginDto;
 import springmvc.board.domain.member.dto.MemberSignUpDto;
 import springmvc.board.domain.member.dto.MemberUpdateDto;
 import springmvc.board.domain.member.exception.MemberException;
 import springmvc.board.domain.member.exception.MemberExceptionType;
 import springmvc.board.domain.member.repository.MemberRepository;
+import springmvc.board.global.jwt.service.JwtService;
 import springmvc.board.global.util.security.SecurityUtil;
 
 import java.util.Optional;
@@ -23,16 +30,28 @@ import java.util.Optional;
 public class MemberServiceImpl implements MemberService{
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final JwtService jwtService;
+
+    @Override
+    public String login(MemberLoginDto memberLoginDto){
+        String jwt = null;
+        try {
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(memberLoginDto.getUsername(), memberLoginDto.getPassword());
+            Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+            // 해당 객체를 SecurityContextHolder에 저장하고
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            // authentication 객체를 createToken 메소드를 통해서 JWT Token을 생성
+            jwt = jwtService.createAccessToken(authentication.getName());
+        } catch (Exception e) {
+            log.error("로그인 인증 과정 Error:",e);
+        }
+
+        return jwt;
+    }
 
     @Override
     public void signUp(MemberSignUpDto memberSignUpDto) throws Exception {
-//        Member member = Member.builder()
-//                .username(memberSignUpDto.username())
-//                .nickName(memberSignUpDto.nickName())
-//                .password(memberSignUpDto.password())
-//                .name(memberSignUpDto.name())
-//                .age(memberSignUpDto.age()).build();
-
         Member member = memberSignUpDto.toEntity();
 
         member.addUserAuthority();
